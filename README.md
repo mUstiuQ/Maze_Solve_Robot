@@ -29,7 +29,7 @@ This project aims to develop a robot capable of autonomously navigating and mapp
     Modular Design:
     The code is structured to be easily extensible and serves as a starting point for more advanced autonomous robotics projects.
 
-Hardware Components
+# Hardware Components
 
     Development Board: STM32F407G-DISC1
 
@@ -41,7 +41,7 @@ Hardware Components
 
     Prototyping Tools: Breadboard, connecting wires, voltage regulator, and power supply
 
-Software Implementation
+# Software Implementation
 
 The project is written in C and uses STM32 HAL libraries. The key components include:
 
@@ -60,7 +60,7 @@ The project is written in C and uses STM32 HAL libraries. The key components inc
     Debug Interface:
     Debug messages are output via UART (or another method) to simulate LCD display updates, providing real-time feedback on sensor readings and robot actions.
 
-Getting Started
+# Getting Started
 Prerequisites
 
     Hardware:
@@ -68,3 +68,7 @@ Prerequisites
 
     Software:
     STM32CubeIDE is recommended for compiling and flashing the code onto the STM32 board. Familiarity with STM32 HAL libraries is beneficial.
+
+# License
+
+This project is licensed under the MIT License. See the LICENSE file for more details.
