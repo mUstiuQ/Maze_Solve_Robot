@@ -1,0 +1,134 @@
+#include "stm32f4xx_hal.h"
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+
+#define MAZE_ROWS 20
+#define MAZE_COLS 20
+
+// Valorile pentru mapare:
+#define START_CELL 2
+#define OPEN_PATH  1
+#define WALL       0
+#define DEAD_END  -1
+#define UNEXPLORED -2
+
+// Matricea care reprezintă labirintul
+int maze[MAZE_ROWS][MAZE_COLS];
+
+// Coordonatele curente ale robotului în matrice
+int posX = MAZE_ROWS / 2;  // Pornim din mijloc pentru a avea spațiu în toate direcțiile
+int posY = MAZE_COLS / 2;
+
+// Prototipuri pentru funcții hardware și de control (similar codului anterior)
+void Debug_Print(const char *msg) { printf("%s\n", msg); }
+void HAL_Delay(uint32_t Delay) { /* delay implementare */ }
+
+// Stub-uri pentru citirea senzorilor – aici se vor implementa citirile reale
+int readUltrasonic(int sensorID) {
+    // Exemplu: se returnează o valoare fixă pentru test
+    if(sensorID == 0) return 100;   // Frontal
+    if(sensorID == 1) return 80;    // Stânga
+    if(sensorID == 2) return 70;    // Dreapta
+    return 0;
+}
+
+// Funcțiile de control ale motoarelor (stub-uri)
+void Motor_Forward(int speed) { Debug_Print("Motoare: FORWARD"); }
+void Motor_SlowForward(int speed) { Debug_Print("Motoare: SLOW FORWARD"); }
+void Motor_Stop(void) { Debug_Print("Motoare: STOP"); }
+void Motor_TurnLeft(void) { Debug_Print("Viraj: STÂNGA"); HAL_Delay(1130); Motor_Stop(); }
+void Motor_TurnRight(void) { Debug_Print("Viraj: DREAPTA"); HAL_Delay(1180); Motor_Stop(); }
+
+// Inițializarea matricei de mapare
+void initMaze(void) {
+    for (int i = 0; i < MAZE_ROWS; i++) {
+        for (int j = 0; j < MAZE_COLS; j++) {
+            maze[i][j] = UNEXPLORED;
+        }
+    }
+    maze[posX][posY] = START_CELL;
+}
+
+// Funcție care actualizează matricea pe baza citirii unui senzor pe o direcție dată
+// dx, dy reprezintă deplasarea relativă de la poziția curentă
+void updateMazeCell(int dx, int dy, int sensorValue, int threshold) {
+    int x = posX + dx;
+    int y = posY + dy;
+    if(x >= 0 && x < MAZE_ROWS && y >= 0 && y < MAZE_COLS) {
+        if(sensorValue < threshold) {
+            maze[x][y] = WALL;
+        } else {
+            // Dacă celula era neexplorată, o marcam ca cale liberă
+            if(maze[x][y] == UNEXPLORED) {
+                maze[x][y] = OPEN_PATH;
+            }
+        }
+    }
+}
+
+// Funcție ce "scanează" mediul din jurul robotului
+void scanEnvironment(void) {
+    int threshold = 50; // Exemplu de prag pentru detectarea unui perete
+    // Citește senzorul frontal
+    int front = readUltrasonic(0);
+    updateMazeCell(0, 1, front, threshold); // presupunem că înainte este +Y
+    
+    // Citește senzorul stâng
+    int left = readUltrasonic(1);
+    updateMazeCell(-1, 0, left, threshold); // stânga: -X
+    
+    // Citește senzorul drept
+    int right = readUltrasonic(2);
+    updateMazeCell(1, 0, right, threshold); // dreapta: +X
+}
+
+// Funcție de actualizare a poziției robotului după o mișcare înainte
+void updatePositionForward(void) {
+    // Actualizează poziția curentă pe matrice, presupunând că deplasarea este cu o celulă înainte (+Y)
+    posY++;
+    // Marchează noua poziție ca drum liber
+    maze[posX][posY] = OPEN_PATH;
+}
+
+// Exemplu de funcție principală care combină navigarea și maparea
+int main(void) {
+    // Inițializările STM32 (HAL, ceas, GPIO, etc.)
+    HAL_Init();
+    // SystemClock_Config() și MX_GPIO_Init() vor fi adăugate aici
+    
+    initMaze();  // Inițializează matricea labirintului
+    Debug_Print("Robotul pornește...");
+    
+    // Pornire mișcare înainte
+    Motor_Forward(-50);
+    
+    while (1) {
+        // Scanează mediul curent și actualizează matricea
+        scanEnvironment();
+        
+        int frontDistance = readUltrasonic(0);
+        if(frontDistance > 90) {
+            // Dacă drumul este liber, continuă înainte
+            Motor_Forward(-50);
+            updatePositionForward();
+        } else {
+            // Dacă se întâlnește obstacol, oprește-te și alege direcția
+            Motor_Stop();
+            // Poți adăuga o logică pentru a marca capătul mort (ex: maze[posX][posY] = DEAD_END)
+            // și pentru a decide dacă să virezi stânga sau dreapta pe baza altor senzori.
+            // Exemplu:
+            int leftDistance = readUltrasonic(1);
+            int rightDistance = readUltrasonic(2);
+            if (leftDistance > rightDistance) {
+                Motor_TurnLeft();
+            } else {
+                Motor_TurnRight();
+            }
+        }
+        
+        HAL_Delay(500);
+    }
+    
+    return 0;
+}
