@@ -1,6 +1,6 @@
 # Maze Navigation and Mapping Robot
 
-![](https://img.shields.io/badge/STM32F407G-8A2BE2) ![](https://img.shields.io/badge/C-FFDD33) ![](https://img.shields.io/badge/STM32CUBE-F1)
+![](https://img.shields.io/badge/STM32F407G-8A2BE2) ![](https://img.shields.io/badge/C++-FFDD33) ![](https://img.shields.io/badge/STM32CUBE-F1)
 
 This project aims to develop a robot capable of autonomously navigating and mapping a maze using an STM32F407 development board. The robot utilizes an L298N motor driver for controlling the motors, three HC-SR04 ultrasonic sensors for distance measurements (front, left, and right), and WiFi/Bluetooth modules for wireless communication. The navigation logic is based on a Depth-First Search (DFS) algorithm that updates a 2D maze map in real time.
 
