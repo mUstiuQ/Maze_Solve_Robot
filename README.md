@@ -1,6 +1,6 @@
 # Maze Navigation and Mapping Robot
 
-![](https://img.shields.io/badge/Arduino) ![](https://img.shields.io/badge/C++-FFDD33) ![](https://img.shields.io/badge/ArduinoIDE)
+![](https://img.shields.io/badge/Arduino-RR4) ![](https://img.shields.io/badge/C++-FFDD33) ![](https://img.shields.io/badge/ArduinoIDE-G5)
 
 This project aims to develop a robot capable of autonomously navigating and mapping a maze using an Arduino development board. The robot utilizes an L298N motor driver for controlling the motors, three HC-SR04 ultrasonic sensors for distance measurements (front, left, and right), and WiFi/Bluetooth modules for wireless communication. The navigation logic is based on a Depth-First Search (DFS) algorithm that updates a 2D maze map in real time.
 
